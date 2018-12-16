@@ -20,8 +20,6 @@ namespace ProbA3
             string fileName = Console.ReadLine();
 
             byte[,] sourceImage = Utility.LoadGrayscaleImage(fileName);
-            int imageWidth = sourceImage.GetLength(0);
-            int imageHeight = sourceImage.GetLength(1);
 
             ProbA3.BayerDitheringAndSave(fileName, sourceImage);
             ProbA3.SpiralDitheringAndSave(fileName, sourceImage);

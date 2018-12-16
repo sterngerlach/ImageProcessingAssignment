@@ -27,6 +27,14 @@ namespace ProbA3
             ProbA3.SpiralDitheringAndSave(fileName, sourceImage);
             ProbA3.HalftoneDitheringAndSave(fileName, sourceImage);
             ProbA3.RandomDitheringAndSave(fileName, sourceImage);
+            ProbA3.ErrorDiffusionDitheringDefaultAndSave(fileName, sourceImage);
+            ProbA3.FloydSteinbergDitheringAndSave(fileName, sourceImage);
+            ProbA3.JarvisJudiceNinkeDitheringAndSave(fileName, sourceImage);
+            ProbA3.StuckiDitheringAndSave(fileName, sourceImage);
+            ProbA3.BurkesDitheringAndSave(fileName, sourceImage);
+            ProbA3.SierraDitheringAndSave(fileName, sourceImage);
+            ProbA3.TwoRowSierraDitheringAndSave(fileName, sourceImage);
+            ProbA3.SierraLiteDitheringAndSave(fileName, sourceImage);
 
             Console.ReadKey();
         }
@@ -73,6 +81,78 @@ namespace ProbA3
             Utility.SaveGrayscaleImage(resultImage, newFilePath);
 
             Console.WriteLine($"Random dithering done and saved to \'{newFilePath}\'");
+        }
+
+        public static void ErrorDiffusionDitheringDefaultAndSave(string sourceFilePath, byte[,] sourceImage)
+        {
+            byte[,] resultImage = ImageHalftoning.ErrorDiffusionDitheringDefault(sourceImage);
+            string newFilePath = ProbA3.NewFilePath(sourceFilePath, "ErrorDiffusionDitheringDefault");
+            Utility.SaveGrayscaleImage(resultImage, newFilePath);
+
+            Console.WriteLine($"Error diffusion dithering done and saved to \'{newFilePath}\'");
+        }
+
+        public static void FloydSteinbergDitheringAndSave(string sourceFilePath, byte[,] sourceImage)
+        {
+            byte[,] resultImage = ImageHalftoning.FloydSteinbergDithering(sourceImage);
+            string newFilePath = ProbA3.NewFilePath(sourceFilePath, "FloydSteinbergDithering");
+            Utility.SaveGrayscaleImage(resultImage, newFilePath);
+
+            Console.WriteLine($"Floyd-Steinberg dithering done and saved to \'{newFilePath}\'");
+        }
+
+        public static void JarvisJudiceNinkeDitheringAndSave(string sourceFilePath, byte[,] sourceImage)
+        {
+            byte[,] resultImage = ImageHalftoning.JarvisJudiceNinkeDithering(sourceImage);
+            string newFilePath = ProbA3.NewFilePath(sourceFilePath, "JarvisJudiceNinkeDithering");
+            Utility.SaveGrayscaleImage(resultImage, newFilePath);
+
+            Console.WriteLine($"Jarvis, Judice & Ninke dithering done and saved to \'{newFilePath}\'");
+        }
+
+        public static void StuckiDitheringAndSave(string sourceFilePath, byte[,] sourceImage)
+        {
+            byte[,] resultImage = ImageHalftoning.StuckiDithering(sourceImage);
+            string newFilePath = ProbA3.NewFilePath(sourceFilePath, "StuckiDithering");
+            Utility.SaveGrayscaleImage(resultImage, newFilePath);
+
+            Console.WriteLine($"Stucki dithering done and saved to \'{newFilePath}\'");
+        }
+
+        public static void BurkesDitheringAndSave(string sourceFilePath, byte[,] sourceImage)
+        {
+            byte[,] resultImage = ImageHalftoning.BurkesDithering(sourceImage);
+            string newFilePath = ProbA3.NewFilePath(sourceFilePath, "BurkesDithering");
+            Utility.SaveGrayscaleImage(resultImage, newFilePath);
+
+            Console.WriteLine($"Burkes dithering done and saved to \'{newFilePath}\'");
+        }
+
+        public static void SierraDitheringAndSave(string sourceFilePath, byte[,] sourceImage)
+        {
+            byte[,] resultImage = ImageHalftoning.SierraDithering(sourceImage);
+            string newFilePath = ProbA3.NewFilePath(sourceFilePath, "SierraDithering");
+            Utility.SaveGrayscaleImage(resultImage, newFilePath);
+
+            Console.WriteLine($"Sierra dithering done and saved to \'{newFilePath}\'");
+        }
+
+        public static void TwoRowSierraDitheringAndSave(string sourceFilePath, byte[,] sourceImage)
+        {
+            byte[,] resultImage = ImageHalftoning.TwoRowSierraDithering(sourceImage);
+            string newFilePath = ProbA3.NewFilePath(sourceFilePath, "TwoRowSierraDithering");
+            Utility.SaveGrayscaleImage(resultImage, newFilePath);
+
+            Console.WriteLine($"Two-row Sierra dithering done and saved to \'{newFilePath}\'");
+        }
+
+        public static void SierraLiteDitheringAndSave(string sourceFilePath, byte[,] sourceImage)
+        {
+            byte[,] resultImage = ImageHalftoning.SierraLiteDithering(sourceImage);
+            string newFilePath = ProbA3.NewFilePath(sourceFilePath, "SierraLiteDithering");
+            Utility.SaveGrayscaleImage(resultImage, newFilePath);
+
+            Console.WriteLine($"Sierra lite dithering done and saved to \'{newFilePath}\'");
         }
     }
 }

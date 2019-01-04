@@ -20,12 +20,11 @@ namespace ImageLib
         /// <summary>
         /// 結果の画像から元の画像への射影変換行列を計算
         /// </summary>
-        /// <param name="sourceImage">元の画像の2次元配列</param>
         /// <param name="sourcePosList">元の画像の対応点のリスト</param>
         /// <param name="destPosList">結果の画像の対応点のリスト</param>
         /// <returns>結果の画像の3次元配列</returns>
         public static Matrix<double> DestToSourceProjectionMatrix(
-            byte[,,] sourceImage, List<Point> sourcePosList, List<Point> destPosList)
+            List<Point> sourcePosList, List<Point> destPosList)
         {
             Debug.Assert(sourcePosList.Count() == destPosList.Count());
             Debug.Assert(sourcePosList.Count() >= 4);
@@ -78,7 +77,7 @@ namespace ImageLib
             
             // 結果画像から元の画像への射影変換を計算
             Matrix<double> matrixProj = ImageMosaicing.DestToSourceProjectionMatrix(
-                sourceImage, sourcePosList, destPosList);
+                sourcePosList, destPosList);
             
             int destWidth = destPosList.Select(pos => pos.X).Max();
             int destHeight = destPosList.Select(pos => pos.Y).Max();
@@ -123,9 +122,11 @@ namespace ImageLib
         /// 画像の射影変換
         /// </summary>
         /// <param name="sourceImage">元の画像の2次元配列</param>
-        /// <param name="matrixProj">射影変換行列</param>
+        /// <param name="matrixProj">結果の画像から元の画像への射影変換行列</param>
+        /// <param name="diffX">結果の画像上で, 元の画像の原点に対応する位置の横方向の座標</param>
+        /// <param name="diffY">結果の画像上で, 元の画像の原点に対応する位置の縦方向の座標</param>
         /// <returns>結果の画像の3次元配列</returns>
-        public static byte[,,] ApplyProjectiveTransformation(
+        public static byte[,,] ApplyProjectiveTransformation2(
             byte[,,] sourceImage, Matrix<double> matrixProj,
             out int diffX, out int diffY)
         {
@@ -170,8 +171,8 @@ namespace ImageLib
             int topY = (int)Math.Min(topLeftDestPos[1], topRightDestPos[1]);
             int bottomY = (int)Math.Max(bottomLeftDestPos[1], bottomRightDestPos[1]);
 
-            diffX = leftX;
-            diffY = topY;
+            diffX = -leftX;
+            diffY = -topY;
 
             int destWidth = rightX - leftX + 1;
             int destHeight = bottomY - topY + 1;
@@ -268,7 +269,7 @@ namespace ImageLib
             for (i = 0; i < otherImages.Count(); ++i) {
                 // 他の入力画像から基準画像への射影変換を計算
                 Matrix<double> matrixProj = ImageMosaicing.DestToSourceProjectionMatrix(
-                    otherImages[i], otherImagePosList[i], baseImagePosList[i]);
+                    otherImagePosList[i], baseImagePosList[i]);
                 // 他の入力画像から基準画像への射影変換を実行
                 otherImages[i] = ImageMosaicing.ApplyProjectiveTransformation(
                     otherImages[i], otherImagePosList[i], baseImagePosList[i]);
@@ -322,6 +323,14 @@ namespace ImageLib
             return destImage;
         }
 
+        /// <summary>
+        /// 基準画像と別の画像を結合
+        /// </summary>
+        /// <param name="baseImage">基準画像の3次元配列</param>
+        /// <param name="otherImages">画像の3次元配列のリスト</param>
+        /// <param name="baseImagePosList">画像ごとに対応点をまとめたリスト</param>
+        /// <param name="otherImagePosList">画像ごとに対応点をまとめたリスト</param>
+        /// <returns>結果の画像の3次元配列</returns>
         public static byte[,,] CombineImages(
             byte[,,] baseImage, List<byte[,,]> otherImages,
             List<List<Point>> baseImagePosList, List<List<Point>> otherImagePosList)
@@ -342,26 +351,26 @@ namespace ImageLib
             for (int i = 0; i < otherImages.Count(); ++i) {
                 // 他の入力画像から基準画像への射影変換を計算
                 Matrix<double> matrixProj = ImageMosaicing.DestToSourceProjectionMatrix(
-                    otherImages[i], otherImagePosList[i], baseImagePosList[i]);
+                    otherImagePosList[i], baseImagePosList[i]);
                 
                 // 他の入力画像から基準画像への射影変換を実行
-                otherImages[i] = ImageMosaicing.ApplyProjectiveTransformation(
+                otherImages[i] = ImageMosaicing.ApplyProjectiveTransformation2(
                     otherImages[i], matrixProj, out int diffX, out int diffY);
 
                 // 基準画像の原点に対応する, 補助画像上の点の座標を保存
-                diffList.Add(new Point(-diffX, -diffY));
+                diffList.Add(new Point(diffX, diffY));
 
                 // 基準画像の原点に対応する, 結果の画像の座標を更新
-                if (-diffX > 0)
-                    baseImageTopLeftX = Math.Max(baseImageTopLeftX, -diffX);
-                if (-diffY > 0)
-                    baseImageTopLeftY = Math.Max(baseImageTopLeftY, -diffY);
+                if (diffX > 0)
+                    baseImageTopLeftX = Math.Max(baseImageTopLeftX, diffX);
+                if (diffY > 0)
+                    baseImageTopLeftY = Math.Max(baseImageTopLeftY, diffY);
 
                 // 結果の画像の大きさを更新
-                if (-diffX < 0)
-                    imageWidth = Math.Max(baseImageWidth, otherImages[i].GetLength(0) + diffX);
-                if (-diffY < 0)
-                    imageHeight = Math.Max(baseImageHeight, otherImages[i].GetLength(1) + diffY);
+                if (diffX < 0)
+                    imageWidth = Math.Max(baseImageWidth, otherImages[i].GetLength(0) - diffX);
+                if (diffY < 0)
+                    imageHeight = Math.Max(baseImageHeight, otherImages[i].GetLength(1) - diffY);
             }
 
             // 結果の画像の大きさを更新

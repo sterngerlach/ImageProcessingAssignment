@@ -302,9 +302,9 @@ namespace ImageLib
             }
             
             do {
-                int newCluster = -1;
-                double minDist = double.MaxValue;
-                double distToCentroid = 0.0;
+                int newCluster;
+                double minDist;
+                double distToCentroid;
                 
                 int x = 0;
                 int y = 0;
